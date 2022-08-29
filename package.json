@@ -1,0 +1,14 @@
+{
+  "name": "midi-organ-middleware",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "server": "cd server && yarn dev",
+    "client": "cd client && yarn start",
+    "start": "concurrently \"yarn client\" \"yarn server\""
+  },
+  "devDependencies": {
+    "concurrently": "^7.3.0"
+  }
+}
