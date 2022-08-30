@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "tsc-watch -p tsconfig.json --outDir ./dist --onSuccess \"node dist/src/index.js\""
+    "start": "tsc-watch --onSuccess \"node dist/index.js\""
   },
   "devDependencies": {
     "tsc-watch": "^5.0.3",
