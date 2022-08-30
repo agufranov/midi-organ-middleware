@@ -28,9 +28,10 @@ const recorder = new Recorder()
 recorder.loadFile('saves/reger59.json')
 console.log(recorder.data)
 const p = {}
-const pedal = new Output('organ.pedal')
-const haupt = new Output('organ.haupt')
-const positiv = new Output('organ.positiv')
+const organ = new Output('organ')
+// const pedal = new Output('organ.pedal')
+// const haupt = new Output('organ.haupt')
+// const positiv = new Output('organ.positiv')
 
 const handlePlayKeys = (on, key) => {
     if (recorder.data.length) {
@@ -39,10 +40,10 @@ const handlePlayKeys = (on, key) => {
             if (!p[key]) {
                 p[key] = recorder.getNextNote()
                 console.log(p[key])
-                pedal.send('noteon', { note: p[key], velocity: 0x7F })
+                organ.send('noteon', { note: p[key], velocity: 0x7F })
             }
         } else {
-            pedal.send('noteoff', { note: p[key], velocity: 0x7F })
+            organ.send('noteoff', { note: p[key], velocity: 0x7F })
             delete p[key]
         }
     }
@@ -79,8 +80,7 @@ events.on('message', (event) => {
             recorder.rewind()
         } else if (match({ type: ['noteon', 'noteoff']}, event)) {
             const isHaupt = event.note < 60
-            const manual = isHaupt ? haupt : positiv
-            haupt.send(type, { ...event, channel: isHaupt ? 0 : 1, note: event.note + (isHaupt ? 24 : -12) })
+            organ.send(type, { ...event, channel: isHaupt ? 0 : 1, note: event.note + (isHaupt ? 24 : -12) })
         }
     }
 })

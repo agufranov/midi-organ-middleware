@@ -25,9 +25,11 @@ export default class Recorder {
 
     loadFile(filename) {
         this.data = JSON.parse(readFileSync(filename))
+        this.rewind()
     }
 
     saveFile(filename) {
         writeFileSync(filename, JSON.stringify(this.data))
+        this.rewind()
     }
 }
