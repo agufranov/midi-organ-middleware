@@ -9,9 +9,9 @@
     "client"
   ],
   "scripts": {
-    "server": "cd server && yarn dev",
+    "server": "cd server && yarn start",
     "client": "cd client && yarn start",
-    "start": "concurrently \"yarn client\" \"yarn server\""
+    "start": "concurrently --kill-others \"yarn client\" \"yarn server\""
   },
   "devDependencies": {
     "concurrently": "^7.3.0"
