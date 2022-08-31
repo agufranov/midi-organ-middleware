@@ -1,7 +1,27 @@
 import { Observable, Subject, map, filter, distinctUntilChanged } from 'rxjs'
+import type { Note, Program, ControlChange } from 'easymidi'
 
 interface InEvent { button: number, on: boolean }
 interface OutEvent<TNote> { note: TNote, on: boolean }
+
+export class SequencerMapper {
+    private playEvents: Partial<MidiEvent>[]
+    // $output: Observable<InEvent>
+
+    constructor(private $input: Observable<MidiEvent>) {
+        this.playEvents = [
+            { _type: 'noteon', note: 59 },
+            { _type: 'cc', controller: 64 }
+        ]
+        // this.$output = $input.pipe(
+        //     filter(event => this.playEvents.some(template => SequencerMapper.isMatch(template, event))),
+        // )
+    }
+
+    private static isMatch(template: Partial<MidiEvent>, event: MidiEvent) {
+        template = {}
+    }
+}
 
 export default class Sequencer<TNote extends number> {
     data: TNote[] = []

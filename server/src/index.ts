@@ -1,12 +1,11 @@
 import express from 'express'
-import Sequencer from './Sequencer'
-import MidiObserver from './MidiObserver'
+import DeviceObserver from './DeviceObserver'
 
 const PORT = 5042
 
 const app = express()
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}...`))
 
-new MidiObserver().$output.subscribe(e => {
-    console.log(e)
-})
+const deviceObserver = new DeviceObserver()
+deviceObserver.$deviceEvents.subscribe(event => console.log('Device event', event))
+deviceObserver.$midiEvents.subscribe(event => console.log('X event', event))
