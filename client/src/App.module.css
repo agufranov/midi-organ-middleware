@@ -1,0 +1,23 @@
+.messages {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.messages div:last-child {
+  border: 3px solid #4a7;
+}
+
+.messagesShadow {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(0deg, #00000099, #00000000)
+}

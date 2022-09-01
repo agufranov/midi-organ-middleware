@@ -21,15 +21,15 @@ export default class DeviceObserver {
         [name: string]: boolean
     } = {}
 
-    private $deviceEventsSubject = new ReplaySubject<DeviceEvent>()
-    $deviceEvents = this.$deviceEventsSubject.asObservable()
+    private $connectionEventsSubject = new ReplaySubject<DeviceEvent>()
+    $connectionEvents = this.$connectionEventsSubject.asObservable()
     private $midiObservables = new ReplaySubject<Observable<MidiEvent>>()
     $midiEvents = this.$midiObservables.pipe(mergeAll())
 
     constructor() {
         getInputs().map(this.addInput)
         usbDetect.startMonitoring()
-        usbDetect.on('add', (device) => {
+        usbDetect.on('add', (device: { deviceName: string }) => {
             console.log('Device detected', device.deviceName)
             setTimeout(this.refresh, USB_ADD_DELAY) // 'changed' will also track removed devices
         })
@@ -43,7 +43,7 @@ export default class DeviceObserver {
             return
         }
 
-        this.$deviceEventsSubject.next({ type: DeviceEventType.ADDED, name })
+        this.$connectionEventsSubject.next({ type: DeviceEventType.ADDED, name })
 
         const $heartbeat = new Observable<void>(subscriber => {
             input.on('clock', () => subscriber.next()).on('activesense', () => subscriber.next())
@@ -64,7 +64,7 @@ export default class DeviceObserver {
 
     private removeInput = (name: string) => {
         if (!this.devices[name]) return
-        this.$deviceEventsSubject.next({ type: DeviceEventType.REMOVED, name })
+        this.$connectionEventsSubject.next({ type: DeviceEventType.REMOVED, name })
         delete this.devices[name]
     }
 
