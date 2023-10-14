@@ -12,6 +12,7 @@ function specificHash(event: MidiEvent): string[] {
 }
 
 export function hash(event: MidiEvent): string {
+    // TODO handle velocity 0 (DGX)
     return [event._type, event.device, ...specificHash(event)].join(' | ')
 }
 

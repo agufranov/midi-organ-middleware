@@ -5,7 +5,7 @@ import styles from './App.module.css';
 import { webSocket } from 'rxjs/webSocket'
 
 function App() {
-  // const ref = useRef()
+  const ref = useRef()
 
   const [messages, setMessages] = useState([])
 
@@ -13,20 +13,20 @@ function App() {
     console.log(1)
     const ws = webSocket('ws://localhost:5042')
     ws.subscribe(msg => setMessages(messages => ([...messages, msg])))
-    // const renderer = new Renderer(ref.current, Renderer.Backends.SVG)
-    // // renderer.resize(500, 500)
-    // const context = renderer.getContext()
-    // const stave = new Stave(10, 40, 400)
-    // stave.addClef('treble').setContext(context).draw()
-    // const voice = new Voice({ num_beats: 4, beat_value: 4 })
-    // voice.addTickables([
-    //   new StaveNote({ keys: ["c/4"], duration: 'q' }),
-    //   new StaveNote({ keys: ["c/5"], duration: 'q' }),
-    //   new StaveNote({ keys: ["c/5"], duration: 'q' }),
-    //   new StaveNote({ keys: ["c/5"], duration: 'q' }),
-    // ])
-    // new Formatter().joinVoices([voice]).format([voice], 360)
-    // voice.draw(context, stave)
+    const renderer = new Renderer(ref.current, Renderer.Backends.SVG)
+    // renderer.resize(500, 500)
+    const context = renderer.getContext()
+    const stave = new Stave(10, 40, 400)
+    stave.addClef('bass').setContext(context).draw()
+    const voice = new Voice({ num_beats: 4 })
+    voice.addTickables([
+      new StaveNote({ keys: ["c/3"], duration: 'q' }),
+      new StaveNote({ keys: ["c/5"], duration: 'q' }),
+      new StaveNote({ keys: ["c/5"], duration: 'q' }),
+      new StaveNote({ keys: ["c/5"], duration: 'q' }),
+    ])
+    new Formatter().joinVoices([voice]).format([voice], 360)
+    voice.draw(context, stave)
     return () => console.log(3)
   }, [])
 
@@ -34,7 +34,7 @@ function App() {
 
   return (
     <div>
-      <div className={styles.messages}>
+      <div ref={ref} className={styles.messages}>
         <div className={styles.messagesShadow}></div>
         {messages.map((message, i) => <div key={i}>#{i} {JSON.stringify(message)}</div>)}
       </div>

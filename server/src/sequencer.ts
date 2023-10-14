@@ -1,39 +1,50 @@
 import { Observable, Subject, map, filter, distinctUntilChanged } from 'rxjs'
 import type { Note, Program, ControlChange } from 'easymidi'
 
-interface InEvent { button: number, on: boolean }
+interface InEvent { button: number | string, on: boolean }
 interface OutEvent<TNote> { note: TNote, on: boolean }
 
-export class SequencerMapper {
-    private playEvents: Partial<MidiEvent>[]
-    // $output: Observable<InEvent>
+export class SequencerMapper<TNote extends number> {
+    $output: Observable<InEvent>
 
-    constructor(private $input: Observable<MidiEvent>) {
-        this.playEvents = [
-            { _type: 'noteon', note: 59 },
-            { _type: 'cc', controller: 64 }
-        ]
-        // this.$output = $input.pipe(
-        //     filter(event => this.playEvents.some(template => SequencerMapper.isMatch(template, event))),
-        // )
+    constructor(private playEvents: Partial<MidiEvent>[], private $input: Observable<MidiEvent>) {
+        this.$output = $input.pipe(
+            filter(event => this.playEvents.some(template => SequencerMapper.isMatch(template, event))),
+            map(e => {
+                switch (e._type) {
+                    case 'cc':
+                        return { button: `cc${e.controller}`, on: !!e.value }
+                    case 'noteon':
+                    case 'noteoff':
+                        return { button: `note${e.note}`, on: e._type === 'noteon' && e.velocity > 0 }
+                }
+            }),
+            filter(Boolean)
+        )
     }
 
     private static isMatch(template: Partial<MidiEvent>, event: MidiEvent) {
-        template = {}
+        // @ts-ignore
+        return Object.keys(template).every(k => template[k] === event[k])
     }
 }
 
-export default class Sequencer<TNote extends number> {
+export class Sequencer<TNote extends number> {
     data: TNote[] = []
     cursor = 0
     $output: Observable<OutEvent<TNote>>
-    mapping: {[key: number]: TNote | null} = {}
+    mapping: { [key: string]: TNote | null } = {}
 
     constructor($input: Observable<InEvent>) {
         this.$output = $input.pipe(
             filter(({ on, button }) => (!on !== !this.mapping[button])),
             map(this.transform),
         )
+    }
+
+    reset(): void {
+        this.cursor = 0
+        this.mapping = {}
     }
 
     private pickNextNote(): TNote {

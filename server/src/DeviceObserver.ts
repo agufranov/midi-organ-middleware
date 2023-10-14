@@ -1,6 +1,6 @@
 import usbDetect from 'usb-detection'
 import { debounceTime, mergeAll, Observable, ReplaySubject, Subject } from 'rxjs'
-import { getInputs, Input } from 'easymidi'
+import { getInputs, getOutputs, Input } from 'easymidi'
 import { symDiff } from './util'
 
 const enum DeviceEventType {
@@ -26,8 +26,8 @@ export default class DeviceObserver {
     private $midiObservables = new ReplaySubject<Observable<MidiEvent>>()
     $midiEvents = this.$midiObservables.pipe(mergeAll())
 
-    constructor() {
-        getInputs().map(this.addInput)
+    constructor(excludedInputs: string[]) {
+        getInputs().filter(inputName => !excludedInputs.includes(inputName)).map(this.addInput)
         usbDetect.startMonitoring()
         usbDetect.on('add', (device: { deviceName: string }) => {
             console.log('Device detected', device.deviceName)

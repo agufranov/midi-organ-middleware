@@ -8,6 +8,8 @@ declare global {
     type MidiDeviceEvent = Typed<'noteon' | 'noteoff', Note> | Typed<'program', Program> | Typed<'cc', ControlChange>
     type MidiEvent = MidiDeviceEvent & { device: string }
 
+    type KeysOfUnion<T> = T extends T ? keyof T : never;
+
     interface ISequencer {
     }
 }
