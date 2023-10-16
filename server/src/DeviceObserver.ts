@@ -26,14 +26,17 @@ export default class DeviceObserver {
     private $midiObservables = new ReplaySubject<Observable<MidiEvent>>()
     $midiEvents = this.$midiObservables.pipe(mergeAll())
 
-    constructor(excludedInputs: string[]) {
-        getInputs().filter(inputName => !excludedInputs.includes(inputName)).map(this.addInput)
+    constructor(private excludedInputs: string[]) {
+        this.getFilteredInputs().filter(inputName => !excludedInputs.includes(inputName)).map(this.addInput)
         usbDetect.startMonitoring()
+        usbDetect.on('changed', (...e) => console.log('changed', ...e))
         usbDetect.on('add', (device: { deviceName: string }) => {
             console.log('Device detected', device.deviceName)
             setTimeout(this.refresh, USB_ADD_DELAY) // 'changed' will also track removed devices
         })
     }
+
+    private getFilteredInputs  =() => getInputs().filter(inputName => !this.excludedInputs.includes(inputName))
 
     private addInput = (name: string) => {
         const input = new Input(name)
@@ -69,7 +72,7 @@ export default class DeviceObserver {
     }
 
     private refresh = () => {
-        const newDevices = getInputs()
+        const newDevices = this.getFilteredInputs()
         const diff = symDiff(Object.keys(this.devices), newDevices)
         diff.removed.forEach(this.removeInput)
         diff.added.forEach(this.addInput)
