@@ -41,7 +41,8 @@ const seqMapper = new SequencerMapper(playEvents, deviceObserver.$midiEvents)
 // seqMapper.$output.subscribe(console.log.bind(null, '[SeqMapper]'))
 
 const sequencer = new Sequencer(seqMapper.$output)
-sequencer.data = require('../saves/reger129.json')
+sequencer.data = require('../saves/reger59.json')
+// sequencer.data = require('../saves/reger129.json')
 
 const channels: { [key: string]: Channel } = {
     pedal: 0,
@@ -59,7 +60,9 @@ deviceObserver.$midiEvents.subscribe(e => {
                 output.send('noteon', { note: e.note, velocity: e.velocity, channel: channels.haupt })
             }
             break
-        // case 'noteoff':
+        case 'noteoff':
+            output.send('noteon', { note: e.note, velocity: 0, channel: channels.haupt })
+            break;
         case 'cc':
             output.send('cc', { controller: e.controller, value: e.value, channel: channels.control })
             break;
